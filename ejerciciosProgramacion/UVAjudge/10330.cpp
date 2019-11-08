@@ -35,7 +35,7 @@ int sendFlow(int s, int t) {
 	bfs(s, t);
 	if (!visited[t])
 		return 0; // No pudimos
-		// Buscamos capacidad mÂ´as pequeËœna en el camino
+		// Buscamos capacidad m´as peque˜na en el camino
 	int flow = 1000000, v = t;
 	while (v != s) {
 		flow = min(cap[parent[v]][v], flow);

@@ -1,46 +1,54 @@
-#include<iostream>
-#include<vector>
-#include<iomanip>
+#include <iostream>
+#include <vector>
+#include <iomanip> 
 
 using namespace std;
 
-const int MAX = 100;
+vector<vector<int>> adjM;
+int numnodos,mayor;
 
-void floyd(vector<vector<int>> &adjMat) {
-	for (int k = 0; k < MAX; k++) {
-		for (int i = 0; i < MAX; i++) {
-			for (int j = 0; j < MAX; j++) {
-				if (adjMat[i][k] + adjMat[k][j] < adjMat[i][j]) {
-					adjMat[i][j] = adjMat[i][k] + adjMat[k][j];
-				}
-			}
-		}
-	}
+void floyd() {
+	for(int k = 0; k < mayor; k++)
+		for(int i = 0; i < mayor;i++)
+			for(int j = 0; j < mayor; j++)
+				if (adjM[i][k] + adjM[k][j] < adjM[i][j]) 
+					adjM[i][j] = adjM[i][k] + adjM[k][j];
 }
 
+
+double resuelve() {
+	double suma = 0;
+	floyd();
+	for (int i = 0; i < mayor; i++)
+		for (int w = 0; w < mayor;w++) 
+            if( adjM[i][w] != 100000)
+			    suma += adjM[i][w];
+            
+	return suma;
+}
+
+
 int main() {
-	int l1, l2;
-	cin >> l1 >> l2;
-	int numCaso = 1;
-	while (l1 != 0 && l2 != 0) {
-		int numNodos = 0;
-		vector<vector<int>> adjMat(MAX, vector<int>(MAX, 1e9));
-		while (l1 != 0 && l2 != 0) {
-			if (adjMat[l1 - 1][l1 - 1] == 1e9) numNodos++;
-			adjMat[l1 - 1][l1 - 1] = 0;
-			adjMat[l1 - 1][l2 - 1] = 1;
-			cin >> l1 >> l2;
+	int n1,n2,cont=1;
+	cin >> n1 >> n2;
+	while (n1 != 0 && n2 != 0) {
+		adjM = vector<vector<int>>(100,vector<int>(100,100000));
+		numnodos = 0;mayor=0;
+		while (n1 != 0 && n2 != 0) {
+            if(adjM[n1-1][n1-1] == 100000)
+                numnodos++;
+			mayor = max(mayor,max(n1,n2));
+			adjM[n1-1][n2-1] = 1;
+			adjM[n1-1][n1-1] = 0;
+			cin >> n1 >> n2;
 		}
-		floyd(adjMat);
-		int suma = 0;
-		for (int i = 0; i < MAX; i++) {
-			for (int j = 0; j < MAX; j++) {
-				if(adjMat[i][j] != 1e9) suma += adjMat[i][j];
-			}
-		}
-		float sol = (float)((float)(suma) / (float)(numNodos * (numNodos - 1)));
-		cout << "Case " << numCaso << ": average length between pages = " << fixed << setprecision(3) << sol << " clicks\n";
-		numCaso++;
-		cin >> l1 >> l2;
+		for (int i = 0; i < 100; i++)
+			adjM[i][i] = 0;
+
+        cout << "Case " << cont << ": average length between pages = " 
+		<< fixed << setprecision(3)<< (double)(resuelve() / (double)(numnodos * (numnodos - 1 ))) << " clicks\n";
+		cin >> n1 >> n2;
+        cont++;
 	}
+	return 0;
 }
