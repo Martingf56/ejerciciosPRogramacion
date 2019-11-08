@@ -1,50 +1,46 @@
-#include <iostream>
-#include <string>
-#include <map>
-#include <vector>
-#include <queue>
-#include <algorithm>
+#include<iostream>
+#include<vector>
+#include<iomanip>
 
 using namespace std;
 
-map<string, vector<string>> adList;
-map<string,int> visitado;
+const int MAX = 100;
 
-void resuelve(string in,string dest){
-    string punto;
-    bool enc = false;
-    queue<string> col;
-    visitado[in] = 0;
-    col.push(in);
-    while(!col.empty() && !enc) {
-        punto = col.front(); col.pop();
-        for(string s : adList[punto]){
-            if(!visitado[s]){
-                visitado[s] = visitado[punto] + 1;
-                if(punto == dest){
-                    enc = true;
-                    break;
-                }
-                col.push(s);
-            }
-        }
-    }
+void floyd(vector<vector<int>> &adjMat) {
+	for (int k = 0; k < MAX; k++) {
+		for (int i = 0; i < MAX; i++) {
+			for (int j = 0; j < MAX; j++) {
+				if (adjMat[i][k] + adjMat[k][j] < adjMat[i][j]) {
+					adjMat[i][j] = adjMat[i][k] + adjMat[k][j];
+				}
+			}
+		}
+	}
 }
 
-int main(){
-    int n;
-    string uno,dos;
-    cin >> n;
-    while(cin){
-        for(int i = 0; i < n; i++){
-            cin >> uno >> dos;
-            adList[uno].push_back(dos);
-            adList[dos].push_back(uno);
-        }
-        cin >> uno >> dos;
-        resuelve(uno,dos);
-        cin >> n;
-        adList = map<string,vector<string>>();
-    }
-    return 0;
+int main() {
+	int l1, l2;
+	cin >> l1 >> l2;
+	int numCaso = 1;
+	while (l1 != 0 && l2 != 0) {
+		int numNodos = 0;
+		vector<vector<int>> adjMat(MAX, vector<int>(MAX, 1e9));
+		while (l1 != 0 && l2 != 0) {
+			if (adjMat[l1 - 1][l1 - 1] == 1e9) numNodos++;
+			adjMat[l1 - 1][l1 - 1] = 0;
+			adjMat[l1 - 1][l2 - 1] = 1;
+			cin >> l1 >> l2;
+		}
+		floyd(adjMat);
+		int suma = 0;
+		for (int i = 0; i < MAX; i++) {
+			for (int j = 0; j < MAX; j++) {
+				if(adjMat[i][j] != 1e9) suma += adjMat[i][j];
+			}
+		}
+		float sol = (float)((float)(suma) / (float)(numNodos * (numNodos - 1)));
+		cout << "Case " << numCaso << ": average length between pages = " << fixed << setprecision(3) << sol << " clicks\n";
+		numCaso++;
+		cin >> l1 >> l2;
+	}
 }

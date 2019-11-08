@@ -12,9 +12,9 @@ vector<int> parent;
 
 void bfs(int s, int t) {
 	queue<int> q;
-	visited.assign(n+2, 0);
+	visited.assign(n*2 + 2, 0);
 	q.push(s);
-	parent[s] = -1; 
+	parent[s] = -1;
 	visited[s] = true;
 	while (!q.empty()) {
 		int u = q.front(); q.pop();
@@ -52,44 +52,52 @@ int sendFlow(int s, int t) {
 }
 
 int main() {
-    int n,cont = 1;
-    int links;
-    int i,j,capa;
-    int B,D;
-    while( cin >> n ){
-        vector<int> capR(n);
-        adj.assign(n+2, vector<int>());
-		cap.assign(n+2, vector<int>(n+2,0));
-        for(int  a = 0; a < n; a++)
-            cin >> capR[a];
-        cin >> links;
-        while(links--){
-            cin >> i >> j >> capa;
-            adj[i].push_back(j);
-            cap[i][j] += capa;
-        }
-        cin >> B >> D;
-        for(int b = 0; b < B; b++){
-            cin >> j;
-            adj[0].push_back(j);
-            cap[0][j] = 1000000;
-        }
-        for(int d = 0; d < D; d++){
-            cin >> j;
-            adj[j].push_back(n+1);
-            cap[j][n+1] = 1000000;
-        }
-        parent.assign(n+2,-1);
-        int flow = 0,ret=0;
-        do{
-            flow = sendFlow(0, n+1);
-            ret +=flow;
-        }while(flow > 0);
+	int cont = 1;
+	int links;
+	int l1, l2, capacidad;
+	int B, D;
+	while (cin >> n) {
+		adj = vector<vector<int>>(n * 2 + 2);
+		cap = vector<vector<int>>(n * 2 + 2, vector<int>(n * 2 + 2, 0));
+		for (int i = 1; i <= n*2; i+=2) {
+			adj[i].push_back(i+1);
+			adj[i+1].push_back(i);
+			cin >> cap[i][i + 1];
+		}
+		cin >> links;
+		for(int i  = 0; i < links; i++) {
+			cin >> l1 >> l2 >> capacidad;
+			l1 *= 2; l2 = l2 * 2 - 1;
+			adj[l1].push_back(l2);
+			adj[l2].push_back(l1);
+			cap[l1][l2] += capacidad;
+		}
+		cin >> B >> D;
+		for (int i = 0; i < B; i++) {
+			cin >> l2;
+			l2 = l2 * 2 - 1;
+			adj[0].push_back(l2);
+			adj[l2].push_back(0);
+			cap[0][l2] = 1000000;
+		}
+		for (int i = 0; i < D; i++) {
+			cin >> l2;
+			l2 = l2 * 2;
+			adj[l2].push_back(n * 2 + 1);
+			adj[n * 2 + 1].push_back(l2);
+			cap[l2][n * 2 + 1] = 1000000;
+		}
+		parent = vector<int>(n * 2 + 1, -1);
+		int flow = 0, ret = 0;
+		do {
+			flow = sendFlow(0, n*2 + 1);
+			ret += flow;
+		} while (flow > 0);
 
-        cout << ret << '\n';
-        
-    }
-	
+		cout << ret << '\n';
+
+	}
+
 	return 0;
 
 }
